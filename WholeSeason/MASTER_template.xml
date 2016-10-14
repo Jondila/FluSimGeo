@@ -1,0 +1,61 @@
+<beast version = '2.0' namespace='master:master.model:master.steppers:master.conditions:master.postprocessors:master.outputs'>
+
+<run spec='Ensemble'
+       simulationTime='40'
+       nTraj='1'
+       nSamples="100"
+       verbosity='0'>
+<stepper spec='SALStepper' stepSize="0.001"/>
+
+  <model spec='Model' id= 'Model'>
+    <populationType spec='PopulationType' typeName='S' dim='31' id='S'/>
+    <populationType spec='PopulationType' typeName='I' dim='31' id='I'/>
+    <populationType spec='PopulationType' typeName='R' dim='31' id='R'/>
+
+    %REACTIONS%
+</model>
+
+<initialState spec='InitState'>
+  %INITIALSTATE%
+</initialState>
+
+<populationEndCondition spec='PopulationEndCondition'
+                threshold="0"
+                exceedCondition="False"
+                isRejection="True">
+   <population spec='Population' type='@I' location='0'/>
+   <population spec='Population' type='@I' location='1'/>
+   <population spec='Population' type='@I' location='2'/>
+   <population spec='Population' type='@I' location='3'/>
+   <population spec='Population' type='@I' location='4'/>
+   <population spec='Population' type='@I' location='5'/>
+   <population spec='Population' type='@I' location='6'/>
+   <population spec='Population' type='@I' location='7'/>
+   <population spec='Population' type='@I' location='8'/>
+   <population spec='Population' type='@I' location='9'/>
+   <population spec='Population' type='@I' location='10'/>
+   <population spec='Population' type='@I' location='11'/>
+   <population spec='Population' type='@I' location='12'/>
+   <population spec='Population' type='@I' location='13'/>
+   <population spec='Population' type='@I' location='14'/>
+   <population spec='Population' type='@I' location='15'/>
+   <population spec='Population' type='@I' location='16'/>
+   <population spec='Population' type='@I' location='17'/>
+   <population spec='Population' type='@I' location='18'/>
+   <population spec='Population' type='@I' location='19'/>
+   <population spec='Population' type='@I' location='20'/>
+   <population spec='Population' type='@I' location='21'/>
+   <population spec='Population' type='@I' location='22'/>
+   <population spec='Population' type='@I' location='23'/>
+   <population spec='Population' type='@I' location='24'/>
+   <population spec='Population' type='@I' location='25'/>
+   <population spec='Population' type='@I' location='26'/>
+   <population spec='Population' type='@I' location='27'/>
+   <population spec='Population' type='@I' location='28'/>
+   <population spec='Population' type='@I' location='29'/>
+   <population spec='Population' type='@I' location='30'/>
+
+ </populationEndCondition>
+   <output spec='JsonOutput' fileName='$(filebase).json'/>
+ </run>
+</beast>
