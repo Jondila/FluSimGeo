@@ -1,3 +1,5 @@
+library(rjson)
+
 ## Load data
 
 dfPopSizes <- read.csv(file = 'RTOPOP.csv', as.is=T)
@@ -41,7 +43,7 @@ diag(epsilon) <- 1 - rowSums(epsilon)
 
 ## Compute reaction rates
 
-getReactionRates <- function(R0=1.2, infectiousPeriod=0.5) {
+getReactionRates <- function(R0, infectiousPeriod) {
     recoveryRate <- rep(1/infectiousPeriod, N)
 
     beta <- rep(0, N)
@@ -65,7 +67,7 @@ getReactionRates <- function(R0=1.2, infectiousPeriod=0.5) {
 
 ## Creates a MASTER XML file using rates computed previously 
 
-createXML <- function(fileName="simulation.xml", R0=1.2, infectiousPeriod=1, initialLoc=1, initialInfectious=10) {
+createXML <- function(fileName="simulation.xml", R0=1.2, infectiousPeriod=0.5, initialLoc=1, initialInfectious=10) {
 
     ## Obtain rates
     rates <- getReactionRates(R0, infectiousPeriod)
@@ -124,4 +126,15 @@ createXML <- function(fileName="simulation.xml", R0=1.2, infectiousPeriod=1, ini
             catLine(line)
         }
     }
+}
+
+## Perform simulation using MASTER and returns the result
+
+simulate <- function(R0=1.2, infectiousPeriod=0.5, initialLoc=1, initialInfectious=10) {
+
+    createXML("simulation.xml", R0, infectiousPeriod, initialLoc, initialInfectious)
+    system("beast simulation.xml")
+    data <- fromJSON(file="simulation.json")
+
+    return(data)
 }
