@@ -212,3 +212,10 @@ plotEpidemic <- function(data, times=20, labels=TRUE) {
         }
     }
 }
+
+## Perform simulation and plot in one step
+
+simAndPlot <- function(R0=1.2, infectiousPeriod=0.5, initialLoc=1, initialInfectious=10, plotTimes=20, labels=TRUE) {
+    data <- simulate(R0, infectiousPeriod, initialLoc, initialInfectious)
+    plotEpidemic(data, plotTimes, labels)
+}
