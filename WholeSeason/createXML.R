@@ -41,7 +41,7 @@ diag(epsilon) <- 1 - rowSums(epsilon)
 
 ## Compute reaction rates
 
-getReactionRates <- function(R0=1.2, infectiousPeriod=1) {
+getReactionRates <- function(R0=1.2, infectiousPeriod=0.5) {
     recoveryRate <- rep(1/infectiousPeriod, N)
 
     beta <- rep(0, N)
@@ -95,6 +95,10 @@ createXML <- function(fileName="simulation.xml", R0=1.2, infectiousPeriod=1, ini
                     catLine("    I[",i-1,"] + S[",j-1,"] -> I[",i-1,"] + I[",j-1,"]")
                     catLine("</reaction>")
                 }
+
+                catLine("<reaction spec='Reaction' rate='", rates$recoveryRate[i], "'>")
+                catLine("    I[",i-1,"] -> 0")
+                catLine("</reaction>")
             }
 
         } else if (trimws(line) == "%INITIALSTATE%") {
