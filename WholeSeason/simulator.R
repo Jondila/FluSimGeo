@@ -1,5 +1,3 @@
-library(rjson)
-
 ## Load data
 
 dfPopSizes <- read.csv(file = 'RTOPOP.csv', as.is=T)
@@ -130,6 +128,8 @@ createXML <- function(fileName="simulation.xml", R0=1.2, infectiousPeriod=0.5, i
 
 ## Perform simulation using MASTER and returns the result
 
+library(rjson)
+
 simulate <- function(R0=1.2, infectiousPeriod=0.5, initialLoc=1, initialInfectious=10) {
 
     createXML("simulation.xml", R0, infectiousPeriod, initialLoc, initialInfectious)
@@ -137,4 +137,70 @@ simulate <- function(R0=1.2, infectiousPeriod=0.5, initialLoc=1, initialInfectio
     data <- fromJSON(file="simulation.json")
 
     return(data)
+}
+
+## Visualize the results using shapefile containing RTO boundaries
+
+library(maptools)
+library(fields)
+rtoShapes <- readShapePoly("../RTO_boundaries_true/RTO_boundaries_true.shp")
+rtoPolyNames <- as.character(rtoShapes$NAME)
+
+getPeakPrevalence <- function(data, relative=FALSE) {
+    maxPrev <- 0
+    for (i in 1:N) {
+        maxPrev <- max(c(maxPrev, data$trajectories[[1]]$I[[i]])/RTO_PopSizes[i])
+    }
+
+    return(maxPrev)
+}
+
+getPrevalence <- function(data, t, relative=FALSE) {
+
+    prevalence <- rep(0, N)
+    for (i in 1:N) {
+        thisName <- RTO_Names[i]
+        thisPolyIdx <- which(rtoPolyNames == thisName)
+
+        eventIdx <- max(which(data$trajectories[[1]]$t<=t))
+        
+        if (relative) {
+            thisPrevalence <- data$trajectories[[1]]$I[[i]][eventIdx]/RTO_PopSizes[i]
+        } else {
+            thisPrevalence <- data$trajectories[[1]]$I[[i]][eventIdx]
+        }
+
+        prevalence[thisPolyIdx] <- thisPrevalence
+    }
+
+    return(prevalence)
+}
+
+plotEpidemic <- function(data, times=20) {
+
+    colourPalette <- heat.colors(101)
+
+    nTimes <- length(times)
+    par(mfcol=c(1,nTimes))
+    par(mar=c(0,0,1,0))
+
+    globalPeak <- getPeakPrevalence(data, relative=TRUE)
+
+    for (tidx in 1:nTimes) {
+        t <- times[tidx]
+
+        #prevalence <- getPrevalence(data, t, relative=FALSE)
+        #scaledPrevalence <- prevalence/globalPeak
+        scaledPrevalence <- getPrevalence(data, t, relative=TRUE)/globalPeak
+
+        colours <- rep(NA, N+1)
+        for (i in 2:length(scaledPrevalence)) {
+            colours[i] <- colourPalette[1 + floor((1-scaledPrevalence[i])*100)]
+        }
+
+        borders <- c(NA, rep(1,N))
+
+        plot(rtoShapes, col=colours, border=borders, main=paste(t, "weeks"))
+        text(coordinates(rtoShapes)[-1,], labels=rtoShapes$NAME[-1], cex=0.8)
+    }
 }
