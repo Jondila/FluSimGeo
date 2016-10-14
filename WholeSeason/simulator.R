@@ -149,7 +149,11 @@ rtoPolyNames <- as.character(rtoShapes$NAME)
 getPeakPrevalence <- function(data, relative=FALSE) {
     maxPrev <- 0
     for (i in 1:N) {
-        maxPrev <- max(c(maxPrev, data$trajectories[[1]]$I[[i]])/RTO_PopSizes[i])
+        if (relative) {
+            maxPrev <- max(c(maxPrev, data$trajectories[[1]]$I[[i]]/RTO_PopSizes[i]))
+        } else {
+            maxPrev <- max(c(maxPrev, data$trajectories[[1]]$I[[i]]))
+        }
     }
 
     return(maxPrev)
@@ -176,7 +180,7 @@ getPrevalence <- function(data, t, relative=FALSE) {
     return(prevalence)
 }
 
-plotEpidemic <- function(data, times=20) {
+plotEpidemic <- function(data, times=20, labels=TRUE) {
 
     colourPalette <- heat.colors(101)
 
@@ -196,11 +200,15 @@ plotEpidemic <- function(data, times=20) {
         colours <- rep(NA, N+1)
         for (i in 2:length(scaledPrevalence)) {
             colours[i] <- colourPalette[1 + floor((1-scaledPrevalence[i])*100)]
+            #print(globalPeak)
         }
 
         borders <- c(NA, rep(1,N))
 
         plot(rtoShapes, col=colours, border=borders, main=paste(t, "weeks"))
-        text(coordinates(rtoShapes)[-1,], labels=rtoShapes$NAME[-1], cex=0.8)
+
+        if (labels) {
+            text(coordinates(rtoShapes)[-1,], labels=rtoShapes$NAME[-1], cex=0.8)
+        }
     }
 }
