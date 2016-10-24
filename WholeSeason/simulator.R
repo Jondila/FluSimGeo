@@ -6,9 +6,9 @@ dfTP <- read.csv(file = 'RTODATA.csv', as.is=T)
 ## Remove Area Outside and NULL
 
 dfPopSizes <-dfPopSizes[!grepl("Area Outside RTO", dfPopSizes$rtonames),]
-dfTP <- df[!grepl("Area Outside RTO", df$Home_RTO),]
-dfTP <- df[!grepl("Area Outside RTO", df$RTO),]
-dfTP <- df[!grepl("NULL", df$RTO),]
+dfTP <- dfTP[!grepl("Area Outside RTO", dfTP$Home_RTO),]
+dfTP <- dfTP[!grepl("Area Outside RTO", dfTP$RTO),]
+dfTP <- dfTP[!grepl("NULL", dfTP$RTO),]
 
 ## Assemble list of names and sort
 
