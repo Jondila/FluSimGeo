@@ -9,6 +9,7 @@ xlim = range(x) + c(-1200, 1200))
 text(x, y, pos = 4, labels = RTO_Names, cex = 0.4)
 
 # Visualizing distance matrix in R using igraph
+#install.packages('igraph')
 
 library(igraph)
 transformedmatrix <- as.matrix(distancematrixm)
