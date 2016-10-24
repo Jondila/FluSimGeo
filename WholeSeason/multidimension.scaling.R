@@ -12,7 +12,7 @@ text(x, y, pos = 4, labels = RTO_Names, cex = 0.4)
 #install.packages('igraph')
 
 library(igraph)
-transformedmatrix <- as.matrix(distancematrixm)
+transformedmatrix <- as.matrix(distancematrix)
 g <- graph.full(nrow(transformedmatrix))
 V(g)$label <- RTO_Names
 layout <- layout.mds(g, dist = as.matrix(transformedmatrix))
