@@ -63,6 +63,12 @@ getReactionRates <- function(R0, infectiousPeriod) {
     return(result)
 }
 
+## Sanitize string
+
+sanitize <- function(str) {
+    return(gsub(" ","_",str))
+}
+
 ## Creates a MASTER XML file using rates computed previously 
 
 createXML <- function(fileName="simulation.xml", R0=1.2, infectiousPeriod=0.5, initialLoc=1, initialInfectious=10) {
@@ -91,12 +97,14 @@ createXML <- function(fileName="simulation.xml", R0=1.2, infectiousPeriod=0.5, i
 
             for (i in 1:N) {
                 for (j in 1:N) {
-                    catLine("<reaction spec='Reaction' rate='", rates$infectionRate[i,j], "'>")
+                    catLine("<reaction spec='Reaction' rate='", rates$infectionRate[i,j],
+                            "' reactionName='",sanitize(RTO_Names[i]),"_to_",sanitize(RTO_Names[j]),"'>")
                     catLine("    I[",i-1,"] + S[",j-1,"] -> I[",i-1,"] + I[",j-1,"]")
                     catLine("</reaction>")
                 }
 
-                catLine("<reaction spec='Reaction' rate='", rates$recoveryRate[i], "'>")
+                catLine("<reaction spec='Reaction' rate='", rates$recoveryRate[i],
+                        "' reactionName='", sanitize(RTO_Names[i]), "_recov'>")
                 catLine("    I[",i-1,"] -> 0")
                 catLine("</reaction>")
             }
@@ -180,13 +188,26 @@ getPrevalence <- function(data, t, relative=FALSE) {
     return(prevalence)
 }
 
+# Function to plot colour bar
+colour.bar <- function(lut, min, max=-min, nticks=5, ticks=seq(min, max, len=nticks), title='') {
+        scale = (length(lut)-1)/(max-min)
+
+    plot(c(0,10), c(min,max), type='n', bty='n', xaxt='n', xlab='', yaxt='n', ylab='', main=title)
+    axis(4, ticks, las=1)
+    for (i in 1:(length(lut)-1)) {
+        y = (i-1)/scale + min
+        rect(0,y,10,y+1/scale, col=lut[i], border=NA)
+    }
+}
+
 plotEpidemic <- function(data, times=20, labels=TRUE) {
 
     colourPalette <- heat.colors(101)
 
     nTimes <- length(times)
-    par(mfcol=c(1,nTimes))
     par(mar=c(0,0,1,0))
+    #par(mfcol=c(1,nTimes))
+    layout(t(matrix(1:(nTimes+1))), c(rep(1, nTimes), lcm(2)))
 
     globalPeak <- getPeakPrevalence(data, relative=TRUE)
 
@@ -211,6 +232,9 @@ plotEpidemic <- function(data, times=20, labels=TRUE) {
             text(coordinates(rtoShapes)[-1,], labels=rtoShapes$NAME[-1], cex=0.8)
         }
     }
+
+    par(mar=c(2,1,2,3))
+    colour.bar(rev(heat.colors(101)), 0, max=1)
 }
 
 ## Perform simulation and plot in one step
