@@ -189,10 +189,10 @@ getPrevalence <- function(data, t, relative=FALSE) {
 }
 
 # Function to plot colour bar
-colour.bar <- function(lut, min, max=-min, nticks=5, ticks=seq(min, max, len=nticks), title='') {
+colour.bar <- function(lut, min, max=-min, nticks=5, ticks=seq(min, max, len=nticks), ...) {
         scale = (length(lut)-1)/(max-min)
 
-    plot(c(0,10), c(min,max), type='n', bty='n', xaxt='n', xlab='', yaxt='n', ylab='', main=title)
+    plot(c(0,10), c(min,max), type='n', bty='n', xaxt='n', xlab='', yaxt='n', ylab='', ...)
     axis(4, ticks, las=1)
     for (i in 1:(length(lut)-1)) {
         y = (i-1)/scale + min
@@ -207,7 +207,7 @@ plotEpidemic <- function(data, times=20, labels=TRUE) {
     nTimes <- length(times)
     par(mar=c(0,0,1,0))
     #par(mfcol=c(1,nTimes))
-    layout(t(matrix(1:(nTimes+1))), c(rep(1, nTimes), lcm(2)))
+    layout(t(matrix(1:(nTimes+1))), c(rep(1, nTimes), lcm(3)))
 
     globalPeak <- getPeakPrevalence(data, relative=TRUE)
 
@@ -233,8 +233,8 @@ plotEpidemic <- function(data, times=20, labels=TRUE) {
         }
     }
 
-    par(mar=c(2,1,2,3))
-    colour.bar(rev(heat.colors(101)), 0, max=1)
+    par(mar=c(3,1,2,3))
+    colour.bar(rev(heat.colors(101)), 0, max=1, main='Relative\nPrevalence')
 }
 
 ## Perform simulation and plot in one step
